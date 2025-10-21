@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>View Members</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to right, #002b55, #004488);
+      color: white;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+
+    h1 {
+      margin-top: 40px;
+      font-size: 36px;
+      font-weight: 700;
+    }
+
+    .search-box {
+      margin: 20px auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      max-width: 700px;
+      border-radius: 50px;
+      overflow: hidden;
+      background: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+
+    .search-box input {
+      width: 80%;
+      padding: 12px 20px;
+      border: none;
+      outline: none;
+      font-size: 16px;
+    }
+
+    .search-box button {
+      background: linear-gradient(to right, #00bfff, #007bff);
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .table-container {
+      margin: 30px auto;
+      background: white;
+      border-radius: 12px;
+      width: 90%;
+      overflow-x: auto;
+      color: black;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      background: linear-gradient(to right, #00bfff, #007bff);
+      color: white;
+      padding: 14px;
+      text-align: left;
+      font-size: 16px;
+    }
+
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+      font-size: 15px;
+    }
+
+    tr:hover {
+      background: #f2f8ff;
+    }
+
+    @media (max-width: 768px) {
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+      th {
+        display: none;
+      }
+      td {
+        display: flex;
+        justify-content: space-between;
+        border: none;
+        border-bottom: 1px solid #ddd;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>View Members</h1>
+
+  <!-- 🔍 Search bar -->
+  <form class="search-box" method="get" action="/admin/viewMembers">
+    <input type="text" name="search" placeholder="Search here..." value="<%= typeof search !== 'undefined' ? search : '' %>">
+    <button type="submit">Search</button>
+  </form>
+
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Sl.No.</th>
+          <th>User Type</th>
+          <th>User ID</th>
+          <th>Gender</th>
+          <th>Date of Birth</th>
+          <th>Phone Number</th>
+          <th>Email ID</th>
+          <th>Address</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (members.length > 0) { %>
+          <% members.forEach((m, index) => { %>
+            <tr>
+              <td><%= index + 1 %></td>
+              <td><%= m.userType %></td>
+              <td><%= m.userId %></td>
+              <td><%= m.gender %></td>
+              <td><%= m.dob ? m.dob.toISOString().split('T')[0] : 'N/A' %></td>
+              <td><%= m.phone %></td>
+              <td><%= m.email %></td>
+              <td><%= m.address %></td>
+            </tr>
+          <% }) %>
+        <% } else { %>
+          <tr><td colspan="8" style="text-align:center;">No members found</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+
+</body>
+</html>

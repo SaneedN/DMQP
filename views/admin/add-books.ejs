@@ -1,0 +1,109 @@
+const express = require("express");
+const router = express.Router();
+const db = require("../config/dbConnection"); // adjust path if needed
+
+// Middleware to check if user is Admin
+const isAdmin = (req, res, next) => {
+  if (!req.session || req.session.userType !== "Admin") {
+    return res.status(403).render("403", {
+      title: "403 Forbidden",
+    });
+  }
+  next();
+};
+
+// 📍 GET route for Add Book page
+router.get("/add", isAdmin, (req, res) => {
+  res.render("admin/add-books", {
+    isbn: "",
+    bookName: "",
+    authorName: "",
+    publisherName: "",
+    quantity: 1,
+    message: "",
+  });
+});
+
+// 📍 POST route for adding a book
+router.post("/add", isAdmin, async (req, res) => {
+  const { isbn, bookName, authorName, publisherName, quantity = 1 } = req.body;
+
+  try {
+    const [rows] = await db
+      .promise()
+      .query("SELECT * FROM books WHERE isbn = ?", [isbn]);
+
+    if (rows.length > 0) {
+      const book = rows[0];
+
+      if (
+        book.bookName === bookName &&
+        book.authorName === authorName &&
+        book.publisherName === publisherName
+      ) {
+        return res.send(`
+          <script>
+            if (confirm('This book already exists in the library. Do you want to add more quantity of this book into the library?')) {
+              window.location.href = '/admin/updateQuantity?isbn=${isbn}&quantity=${quantity}';
+            }
+          </script>
+        `);
+      } else {
+        return res.render("admin/add-books", {
+          isbn,
+          bookName,
+          authorName,
+          publisherName,
+          quantity,
+          message:
+            "Book details don't match with ISBN. Please enter the correct ISBN or check the book details.",
+        });
+      }
+    }
+
+    // If book doesn’t exist
+    await db
+      .promise()
+      .query(
+        "INSERT INTO books (isbn, bookName, authorName, publisherName, available, borrowed) VALUES (?, ?, ?, ?, ?, ?)",
+        [isbn, bookName, authorName, publisherName, quantity, 0]
+      );
+
+    return res.send(`
+      <script>
+        alert('Book(s) added successfully');
+        window.location.href = '/admin/dashboard';
+      </script>
+    `);
+  } catch (err) {
+    console.error("Error:", err);
+    res.status(500).send("Server error");
+  }
+});
+
+// 📍 POST route for AJAX ISBN autofill
+router.post("/getBookDetailsByISBN", isAdmin, async (req, res) => {
+  const { isbn } = req.body;
+  try {
+    const [rows] = await db
+      .promise()
+      .query("SELECT * FROM books WHERE isbn = ?", [isbn]);
+
+    if (rows.length > 0) {
+      const book = rows[0];
+      return res.json({
+        success: true,
+        bookName: book.bookName,
+        authorName: book.authorName,
+        publisherName: book.publisherName,
+      });
+    } else {
+      return res.json({ success: false });
+    }
+  } catch (err) {
+    console.error(err);
+    res.json({ success: false });
+  }
+});
+
+module.exports = router;

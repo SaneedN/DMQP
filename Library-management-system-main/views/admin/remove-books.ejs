@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Remove Books</title>
+  <link rel="stylesheet" href="/assets/css/formLayout.css" />
+</head>
+<body>
+
+  <div class="background-container"></div>
+
+  <div class="container">
+    <h2>Enter Book Details</h2>
+    <form method="POST" action="/RemoveBooks">
+
+      <div class="form-group">
+        <label for="isbn">ISBN (13 digits):<span class="red-star">*</span></label>
+        <input type="text" id="isbn" name="isbn" maxlength="13" pattern="\d{13}"
+               required class="input" value="<%= isbn || '' %>">
+        <small>If this ISBN already exists, book details will be auto-filled.</small>
+        <span class="error"><%= message || '' %></span>
+      </div>
+
+      <div class="form-group">
+        <label for="bookName">Book Name:<span class="red-star">*</span></label>
+        <input type="text" id="bookName" name="bookName" required class="input"
+               value="<%= title || '' %>">
+      </div>
+
+      <div class="form-group">
+        <label for="authorName">Author Name:<span class="red-star">*</span></label>
+        <input type="text" id="authorName" name="authorName" required class="input"
+               value="<%= author || '' %>">
+      </div>
+
+      <div class="form-group">
+        <label for="publisherName">Publisher Name:<span class="red-star">*</span></label>
+        <input type="text" id="publisherName" name="publisherName" required class="input"
+               value="<%= publisherName || '' %>">
+      </div>
+
+      <div class="form-group">
+        <label for="quantity">Quantity:<span class="red-star">*</span></label>
+        <input type="number" id="quantity" name="quantity" min="1" max="100" step="1"
+               required class="input">
+        <span class="error"><%= message2 || '' %></span>
+      </div>
+
+      <button type="submit">Remove book from the library</button>
+    </form>
+  </div>
+
+</body>
+</html>
